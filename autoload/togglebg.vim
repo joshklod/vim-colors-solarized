@@ -26,9 +26,30 @@ tmenu ToolBar.togglebg Toggle light and dark background modes
 noremap <SID>TogBG  :call <SID>TogBG()<CR>
 
 function! s:TogBG()
-    let &background = ( &background == "dark"? "light" : "dark" )
     if exists("g:colors_name")
-        exe "colorscheme " . g:colors_name
+        " Save g:colors_name in case next command resets it
+        let s:colors_name = g:colors_name
+    elseif exists("s:old_colors")
+        " Restore previous colorscheme
+        exe "colorscheme " . s:old_colors
+        unlet s:old_colors
+        return
+    endif
+    let &background = ( &background == "dark"? "light" : "dark" )
+    " Handle incompatible colorscheme better
+    if !exists("g:colors_name")
+        " Reset colorscheme properly
+        highlight clear
+        " Fix Normal colors to match bg
+        if &background == "dark"
+            highlight Normal ctermfg=LightGray ctermbg=Black guifg=LightGray guibg=Black
+        else
+            highlight Normal ctermfg=Black ctermbg=White guifg=Black guibg=gray90
+        endif
+        if exists("s:colors_name")
+            " Save previous colorscheme for next toggle
+            let s:old_colors = s:colors_name
+        endif
     endif
 endfunction
 
@@ -53,3 +74,5 @@ endfunction
 if !exists("no_plugin_maps") && !hasmapto('<Plug>ToggleBackground')
     call togglebg#map("<F5>")
 endif
+
+" vim: sw=4 et
