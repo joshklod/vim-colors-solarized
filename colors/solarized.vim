@@ -156,15 +156,7 @@ else
     endfor
 endif
 
-if has("termguicolors")
-	if &termguicolors == 1
-		let s:termguicolors = 1
-	else
-		let s:termguicolors = 0
-	endif
-else
-	let s:termguicolors = 0
-endif
+let s:termguicolors = has("termguicolors") ? &termguicolors : 0
 
 " }}}
 " Default option values"{{{
@@ -262,7 +254,7 @@ else
 	let s:fmode = "cterm"
 endif
 
-if ((has("gui_running") || s:termguicolors == 1) && g:solarized_degrade == 0)
+if (s:vmode == "gui" && g:solarized_degrade == 0)
     let s:base03      = "#002b36"
     let s:base02      = "#073642"
     let s:base01      = "#586e75"
@@ -280,7 +272,7 @@ if ((has("gui_running") || s:termguicolors == 1) && g:solarized_degrade == 0)
     let s:cyan        = "#2aa198"
     "let s:green       = "#859900" "original
     let s:green       = "#719e07" "experimental
-elseif ((has("gui_running") || s:termguicolors == 1) && g:solarized_degrade == 1)
+elseif (s:vmode == "gui" && g:solarized_degrade == 1)
     " These colors are identical to the 256 color mode. They may be viewed
     " while in gui mode via "let g:solarized_degrade=1", though this is not
     " recommened and is for testing only.
